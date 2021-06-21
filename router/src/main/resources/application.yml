@@ -1,0 +1,29 @@
+server:
+  port: 8888
+
+management:
+  endpoint.gateway.enabled: true
+  endpoints.web.exposure.include: gateway
+
+spring:
+  application.name: router
+  cloud:
+    gateway:
+      discovery.locator.enabled: true
+      routes:
+        - id: hello-service
+          uri: lb://hello-service
+          predicates:
+            Path=/hello-service/**
+          filters:
+            - StripPrefix=1
+        - id: bye-service
+          uri: lb://bye-service
+          predicates:
+            Path=/bye-service/**
+          filters:
+            - StripPrefix=1
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
