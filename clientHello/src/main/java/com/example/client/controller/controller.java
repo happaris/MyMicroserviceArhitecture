@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class controller {
     @Autowired
     private KafkaTemplate<String, Long> kafkaTemplate;
-    private long skip = 0;
+
 
     @GetMapping("/api/hello")
     public String helloPage() {
