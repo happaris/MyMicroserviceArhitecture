@@ -17,14 +17,7 @@ public class controller {
     private MessageService msgService;
 
     @GetMapping("/api/bye")
-    public String byePage() throws InterruptedException {
-        while (msgService.getHelloNumb() == -1) {
-            kafkaTemplate.send("givHello",  2L);
-            Thread.sleep(1000);
-            if (msgService.getHelloNumb() == -1) {
-                msgService.setHelloNumb(-2L);
-            }
-        }
+    public String byePage() throws InterruptedException{
         kafkaTemplate.send("bye", 1L);
         if (msgService.getHelloNumb() == -2) {
             return "Что-то пошло не так =( (NO CONNECTION TO THE DATABASE)";

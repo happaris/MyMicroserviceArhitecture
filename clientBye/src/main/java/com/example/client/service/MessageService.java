@@ -29,7 +29,14 @@ public class MessageService {
         this.helloNumb = helloNumb;
     }
 
-    public long getHelloNumb() {
+    public long getHelloNumb() throws InterruptedException {
+        while (helloNumb == -1) {
+            kafka.send("givHello",  2L);
+            Thread.sleep(1000);
+            if (helloNumb == -1) {
+                helloNumb = -2L;
+            }
+        }
         return helloNumb;
     }
 }
