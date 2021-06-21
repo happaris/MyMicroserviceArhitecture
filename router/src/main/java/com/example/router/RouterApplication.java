@@ -11,7 +11,6 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 @SpringBootApplication
@@ -27,21 +26,25 @@ public class RouterApplication {
         SpringApplication.run(RouterApplication.class, args);
     }
 
-    @KafkaListener(topics = "countBreakpoint")
+    @KafkaListener(topics = "countBreakpointHello")
     public void update(ConsumerRecord<String, Long> record) {
-        Count obj = new Count(record.key(), record.value());
-        if (obj.getName().equals("hello")) {
-            obj.setId(1L);
-        } else if (obj.getName().equals("bye")) {
-            obj.setId(2L);
-        }
+        Count obj = new Count("hello", record.value());
+        obj.setId(1L);
+        service.save(obj);
+    }
+    @KafkaListener(topics = "bye")
+    public void updateBye(ConsumerRecord<String, Long> record) {
+        Count obj = new Count("Bye", record.offset() + 1);
+        obj.setId(2L);
         service.save(obj);
     }
     @KafkaListener(topics = "givHello")
     public void helpHello() {
         List<Count> list = service.getAllCount();
-        if (!list.isEmpty()) {
-            kafka.send("returnHello", list.get(0).getCount());
+        for (Count count : list) {
+            if (count.getName().equals("hello")) {
+                kafka.send("returnHello", count.getCount());
+            }
         }
     }
 }
